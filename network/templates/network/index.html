@@ -1,0 +1,58 @@
+{% extends "network/layout.html" %}
+
+{% block body %}
+<div class="container mt-4">  <!-- ✅ Adds left/right padding and top margin -->
+
+    <h2 class="mb-4">All Posts</h2>
+
+    {% if user.is_authenticated %}
+        <!-- ✅ Center the form and give it a max width -->
+        <div class="row justify-content-center mb-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-body">
+                        <form action="{% url 'new_post' %}" method="post">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <textarea name="content" class="form-control" rows="3" placeholder="What's on your mind?"></textarea>
+                            </div>
+                            <input type="submit" class="btn btn-primary mt-2" value="Post">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    {% if messages %}
+        <div class="row justify-content-center">
+            <div class="col-md-12">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+
+    {% for post in posts %}
+        <!-- ✅ Post card with horizontal spacing and centered layout -->
+        <div class="row justify-content-center">
+            <div class="col-md-12">
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ post.user }}</h5>
+                        <p class="card-text">{{ post.content }}</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted">{{ post.timestamp}}</small>
+                            <span>Likes: {{ post.like_count }}</span>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <p>No posts yet.</p>
+    {% endfor %}
+</div>
+{% endblock %}
