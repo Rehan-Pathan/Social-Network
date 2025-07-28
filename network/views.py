@@ -1,7 +1,7 @@
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
-from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 
 from .models import Post, User
@@ -13,6 +13,15 @@ def index(request):
     posts = Post.objects.all().order_by('-timestamp')
     return render(request, "network/index.html", {
         "posts": posts
+    })
+
+def profile_view(request, username):
+    profile_user = get_object_or_404(User, username=username)
+    posts = profile_user.posts.all().order_by('-timestamp')
+
+    return JsonResponse({
+        "profile": profile_user.serialize_profile(request.user),
+        "posts": [post.serialize(current_user=request.user) for post in posts]
     })
 
 
